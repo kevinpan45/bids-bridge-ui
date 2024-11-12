@@ -1,0 +1,14 @@
+{
+  "name": "bids-collector-desktop",
+  "version": "1.0.0",
+  "description": "BIDS dataset collect application",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron . --no-sandbox"
+  },
+  "author": "kevinpan45@163.com",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^33.2.0"
+  }
+}
