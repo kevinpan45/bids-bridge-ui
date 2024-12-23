@@ -1,10 +1,10 @@
 {
-	"name": "svelte-ui-template",
+	"name": "bids-bridge-ui",
 	"version": "0.0.1",
 	"scripts": {
-		"dev": "vite dev --host 192.168.31.56 --port 5173",
+		"dev": "vite dev",
 		"build": "vite build",
-		"preview": "vite preview --host 192.168.31.56 --port 5173"
+		"preview": "vite preview"
 	},
 	"devDependencies": {
 		"@iconify/svelte": "4.0.2",
