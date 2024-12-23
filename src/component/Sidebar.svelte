@@ -34,7 +34,7 @@
       class={`font-title inline-flex text-lg md:text-2xl ${collapsed ? "!hidden" : ""}`}
       style={`background-image: ${logo}`}
     >
-      Sample Site
+      BIDS Bridge
     </div>
     <div
       tabindex="0"

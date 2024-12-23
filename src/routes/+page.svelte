@@ -1,4 +1,4 @@
 <script>
 </script>
 
-<div>Home Page</div>
+<div>BIDS Marketplace</div>
