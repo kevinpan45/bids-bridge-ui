@@ -1,10 +1,8 @@
-import adapter from '@sveltejs/adapter-static';
+import adapter from '@sveltejs/adapter-vercel';
 
 const config = {
 	kit: {
-		adapter: adapter({
-			fallback: 'app.html' // may differ from host to host
-		}),
+		adapter: adapter(),
 		alias: {
 			$component: "src/component",
 		},
