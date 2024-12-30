@@ -8,8 +8,9 @@
 	},
 	"devDependencies": {
 		"@iconify/svelte": "4.0.2",
-		"@sveltejs/adapter-static": "^2.0.1",
-		"@sveltejs/kit": "^1.20.4",
+		"@sveltejs/adapter-static": "^3.0.0",
+		"@sveltejs/kit": "^2.0.0",
+		"@sveltejs/vite-plugin-svelte": "^3.0.0",
 		"autoprefixer": "10.4.17",
 		"daisyui": "^4.7.3",
 		"postcss": "8.4.35",
@@ -17,7 +18,7 @@
 		"svelte-time": "^0.8.2",
 		"svelte-typeahead": "4.4.1",
 		"tailwindcss": "3.4.1",
-		"vite": "4.3.2"
+		"vite": "^5.0.0"
 	},
 	"type": "module",
 	"dependencies": {
