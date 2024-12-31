@@ -20,7 +20,8 @@
 
   $: collapsed = innerWidth < sideBarCollapsedWidth;
 
-  axios.defaults.baseURL = "http://192.168.31.56:8080";
+  axios.defaults.baseURL = import.meta.env.VITE_API_SERVER;
+  
   axios.interceptors.request.use(
     function (config) {
       config.headers["Authorization"] = "Bearer " + "auth-framework-todo";
