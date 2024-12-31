@@ -1,6 +1,7 @@
 <script>
   import SidebarMenuItem from "$component/SidebarMenuItem.svelte";
   import logo from "$lib/images/svelte-logo.svg";
+  import { getMenus } from "$lib/menu";
 
   let serverVersion = "0.0.1";
   let contextMenuEl;
@@ -8,7 +9,7 @@
   export let closeDrawer;
   // export let openDrawer;
 
-  export let pages;
+  let pages = getMenus();
   export let drawerSidebarScrollY;
   export let collapsed;
   $: switchNavbarStyle = drawerSidebarScrollY > 40 ? true : false;

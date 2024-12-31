@@ -7,12 +7,6 @@
   import Navbar from "$component/Navbar.svelte";
   import Sidebar from "$component/Sidebar.svelte";
 
-  let menus = [
-    { name: "storage", link: "/storage", alias: "Storage", enabled: true },
-    { name: "profile", link: "/profile", alias: "Profile", enabled: true },
-    { name: "setting", link: "/setting", alias: "Settings", enabled: true },
-  ];
-
   let username;
 
   let layoutMounted = false;
@@ -39,16 +33,6 @@
   );
 
   onMount(async () => {
-    // 菜单与svg的映射关系
-    const iconMap = {
-      storage: "storage",
-      profile: "profile",
-      setting: "setting",
-    };
-    menus = menus.map((menu) => {
-      return { ...menu, icon: iconMap[menu.name] };
-    });
-
     layoutMounted = true;
     collapsed = sessionStorage.getItem("sidebar-collapsed") === "true";
   });
@@ -121,7 +105,7 @@
         <aside
           class={`${collapsed ? "!w-20 shadow-2xl" : "w-80"} transition-width duration-75 ease-in-out bg-base-100 min-h-screen pointer-events-auto`}
         >
-          <svelte:component this={Sidebar} pages={menus} {collapsed} />
+          <svelte:component this={Sidebar} {collapsed} />
           <div
             class="bg-base-100 pointer-events-none sticky bottom-0 flex h-40 [mask-image:linear-gradient(transparent,#000000)]"
           />

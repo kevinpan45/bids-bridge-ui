@@ -7,6 +7,7 @@ const config = {
 		}),
 		alias: {
 			$component: "src/component",
+			$lib: "src/lib",
 		},
 	}
 };
