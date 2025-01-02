@@ -1,15 +1,18 @@
 <script>
   import "../app.css";
-  import { injectAnalytics } from '@vercel/analytics/sveltekit'
+  import { injectAnalytics } from "@vercel/analytics/sveltekit";
   import Icon from "$component/icon/Icon.svelte";
   import axios from "axios";
   import { onMount } from "svelte";
   import toast, { Toaster } from "svelte-french-toast";
   import Navbar from "$component/Navbar.svelte";
   import Sidebar from "$component/Sidebar.svelte";
+  import { createAuth0Client } from "@auth0/auth0-spa-js";
 
   // Inject vercel analytics
   injectAnalytics();
+
+  let auth0Client;
 
   let username;
 
@@ -25,7 +28,7 @@
   $: collapsed = innerWidth < sideBarCollapsedWidth;
 
   axios.defaults.baseURL = import.meta.env.VITE_API_SERVER;
-  
+
   axios.interceptors.request.use(
     function (config) {
       config.headers["Authorization"] = "Bearer " + "auth-framework-todo";
@@ -38,6 +41,26 @@
   );
 
   onMount(async () => {
+    auth0Client = await createAuth0Client({
+      domain: import.meta.env.VITE_AUTH0_DOMAIN,
+      client_id: import.meta.env.VITE_AUTH0_CLIENT_ID,
+    });
+
+    const isAuthenticated = await auth0Client.isAuthenticated();
+    if (isAuthenticated) {
+      const user = await auth0Client.getUser();
+      username = user.name;
+    }
+
+    const query = window.location.search;
+    if (query.includes("code=") && query.includes("state=")) {
+      // Process the login state
+      await auth0Client.handleRedirectCallback();
+
+      // Use replaceState to redirect the user away and remove the querystring parameters
+      window.history.replaceState({}, document.title, "/");
+    }
+
     layoutMounted = true;
     collapsed = sessionStorage.getItem("sidebar-collapsed") === "true";
   });
