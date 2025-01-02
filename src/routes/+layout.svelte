@@ -1,11 +1,15 @@
 <script>
   import "../app.css";
+  import { injectAnalytics } from '@vercel/analytics/sveltekit'
   import Icon from "$component/icon/Icon.svelte";
   import axios from "axios";
   import { onMount } from "svelte";
   import toast, { Toaster } from "svelte-french-toast";
   import Navbar from "$component/Navbar.svelte";
   import Sidebar from "$component/Sidebar.svelte";
+
+  // Inject vercel analytics
+  injectAnalytics();
 
   let username;
 
