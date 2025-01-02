@@ -1,5 +1,6 @@
 <script>
   import "../app.css";
+  import { injectAnalytics } from '@vercel/analytics/sveltekit'
   import Icon from "$component/icon/Icon.svelte";
   import axios from "axios";
   import { onMount } from "svelte";
