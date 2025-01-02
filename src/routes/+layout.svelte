@@ -8,6 +8,9 @@
   import Navbar from "$component/Navbar.svelte";
   import Sidebar from "$component/Sidebar.svelte";
 
+  // Inject vercel analytics
+  injectAnalytics();
+
   let username;
 
   let layoutMounted = false;
