@@ -1,12 +1,18 @@
 <script>
   import "../app.css";
-  import { injectAnalytics } from '@vercel/analytics/sveltekit'
+  import { injectAnalytics } from "@vercel/analytics/sveltekit";
   import Icon from "$component/icon/Icon.svelte";
   import axios from "axios";
   import { onMount } from "svelte";
   import toast, { Toaster } from "svelte-french-toast";
   import Navbar from "$component/Navbar.svelte";
   import Sidebar from "$component/Sidebar.svelte";
+  import { createAuth0Client } from "@auth0/auth0-spa-js";
+
+  // Inject vercel analytics
+  injectAnalytics();
+
+  let auth0Client;
 
   // Inject vercel analytics
   injectAnalytics();
@@ -25,10 +31,10 @@
   $: collapsed = innerWidth < sideBarCollapsedWidth;
 
   axios.defaults.baseURL = import.meta.env.VITE_API_SERVER;
-  
+
   axios.interceptors.request.use(
     function (config) {
-      config.headers["Authorization"] = "Bearer " + "auth-framework-todo";
+      // config.headers["Authorization"] = "Bearer " + "auth-framework-todo";
       return config;
     },
     function (error) {
@@ -37,7 +43,49 @@
     }
   );
 
+  async function login() {
+    await auth0Client.loginWithRedirect({
+      authorizationParams: {
+        client_id: import.meta.env.VITE_AUTH0_CLIENT_ID,
+      },
+    });
+    const user = await auth0Client.getUser();
+    console.log(user);
+  }
+
+  async function logout() {
+    await auth0Client.logout({
+      logoutParams: {
+        returnTo: window.location.origin,
+      },
+    });
+  }
+
   onMount(async () => {
+    if (!auth0Client) {
+      auth0Client = await createAuth0Client({
+        domain: import.meta.env.VITE_AUTH0_DOMAIN,
+        client_id: import.meta.env.VITE_AUTH0_CLIENT_ID,
+        authorizationParams: {
+          redirect_uri: import.meta.env.VITE_AUTH0_CALLBACK_URL,
+        },
+      });
+    }
+
+    if (
+      location.search.includes("state=") &&
+      (location.search.includes("code=") || location.search.includes("error="))
+    ) {
+      await auth0Client.handleRedirectCallback();
+      window.history.replaceState({}, document.title, "/");
+    }
+
+    const isAuthenticated = await auth0Client.isAuthenticated();
+    if (isAuthenticated) {
+      const user = await auth0Client.getUser();
+      username = user.name;
+    }
+
     layoutMounted = true;
     collapsed = sessionStorage.getItem("sidebar-collapsed") === "true";
   });
@@ -91,7 +139,7 @@
   <div class="bg-base-100 drawer lg:drawer-open h-full overflow-hidden">
     <div class={`${collapsed ? "ml-20" : ""} drawer-content overflow-auto`}>
       {#if layoutMounted}
-        <Navbar {collapsed} {username} showSearch={false} />
+        <Navbar {collapsed} {username} {login} showSearch={false} />
       {/if}
 
       <div class={"max-w-[100vw] px-6 pb-16 xl:pr-2"}>

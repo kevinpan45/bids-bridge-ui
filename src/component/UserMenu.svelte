@@ -1,18 +1,6 @@
 <script>
-  import { createAuth0Client } from "@auth0/auth0-spa-js";
-  // export let logout = () => {};
+  export let logout = () => {};
   export let username;
-  async function logout() {
-    let auth0Client = await createAuth0Client({
-      domain: import.meta.env.VITE_AUTH0_DOMAIN,
-      client_id: import.meta.env.VITE_AUTH0_CLIENT_ID,
-    });
-    auth0Client.logout({
-      logoutParams: {
-        returnTo: window.location.origin,
-      },
-    });
-  }
 </script>
 
 <div class="hidden md:block">

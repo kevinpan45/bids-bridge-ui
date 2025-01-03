@@ -18,7 +18,7 @@ export async function login() {
     await client.loginWithRedirect({
         authorizationParams: {
             client_id: import.meta.env.VITE_AUTH0_CLIENT_ID,
-            redirect_uri: window.location.origin,
+            redirect_uri: import.meta.env.VITE_AUTH0_CALLBACK_URL,
         }
     });
 }

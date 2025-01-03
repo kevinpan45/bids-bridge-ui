@@ -22,3 +22,6 @@ docker build -t bids-bridge-ui:latest .
 ```bash
 docker run -d -p 80:80 bids-bridge-ui
 ```
+
+## Open Source
+- ICON: [heroicons](https://heroicons.com/outline)
