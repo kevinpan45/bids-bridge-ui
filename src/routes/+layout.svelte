@@ -14,6 +14,9 @@
 
   let auth0Client;
 
+  // Inject vercel analytics
+  injectAnalytics();
+
   let username;
 
   let layoutMounted = false;
