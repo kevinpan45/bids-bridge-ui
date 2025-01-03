@@ -1,6 +1,5 @@
 <script>
   import UserIcon from "$component/UserMenu.svelte";
-  import { login } from "$lib/auth";
   export let showSearch = true;
   export let username = "";
 
@@ -8,6 +7,7 @@
   $: switchNavbarStyle = scrollY > 40 ? true : false;
 
   export let data;
+  export let login = () => {};
   export let addScrollPaddingToNavbar;
   export let removeScrollPaddingFromNavbar;
 </script>
