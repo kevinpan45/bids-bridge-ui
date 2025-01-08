@@ -6,7 +6,7 @@
   let datasets = [];
 
   function collectDataset(datasetId) {
-    toast.success(`Dataset ${datasetId} collecting in background`);
+    toast.error(`It's developing...`);
   }
 
   function blobToArray(rawData) {
