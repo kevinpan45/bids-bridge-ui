@@ -6,7 +6,33 @@
   let datasets = [];
 
   function collectDataset(datasetId) {
-    toast.success(`Dataset ${datasetId} collecting in background`);
+    toast.error(`It's developing...`);
+  }
+
+  function blobToArray(rawData) {
+    let array = [];
+    // read line
+    let lines = rawData.split("\n");
+    lines.forEach((line) => {
+      if (line) {
+        let item;
+        try {
+          item = JSON.parse(line);
+        } catch (error) {
+          console.error("Error parsing JSON string: " + line);
+          return;
+        }
+        let dataset = {
+          id: item.node.id,
+          name: item.node.latestSnapshot.description.Name,
+          modality: item.node.latestSnapshot.summary.modalities,
+          participants: item.node.latestSnapshot.summary.subjects.length,
+          link: `https://openneuro.org/datasets/${item.node.id}/versions/${item.node.latestSnapshot.tag}`,
+        };
+        array.push(dataset);
+      }
+    });
+    return array;
   }
 
   function blobToArray(rawData) {
