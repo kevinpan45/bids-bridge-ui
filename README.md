@@ -1,7 +1,7 @@
 # bids-collector-desktop
 BIDS dataset collect application
 
-![Vercel Deployment](https://bids-collector-desktop.vercel.app)
+[Vercel Deployment](https://bids-collector-desktop.vercel.app)
 
 ## Dockerize the application
 
