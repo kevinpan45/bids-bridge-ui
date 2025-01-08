@@ -1,4 +1,5 @@
 <script>
+  import axios from "axios";
   import { onMount } from "svelte";
   import toast from "svelte-french-toast";
 
@@ -8,27 +9,40 @@
     toast.success(`Dataset ${datasetId} collecting in background`);
   }
 
+  function blobToArray(rawData) {
+    let array = [];
+    // read line
+    let lines = rawData.split("\n");
+    lines.forEach((line) => {
+      if (line) {
+        let item;
+        try {
+          item = JSON.parse(line);
+        } catch (error) {
+          console.error("Error parsing JSON string: " + line);
+          return;
+        }
+        let dataset = {
+          id: item.node.id,
+          name: item.node.latestSnapshot.description.Name,
+          modality: item.node.latestSnapshot.summary.modalities,
+          participants: item.node.latestSnapshot.summary.subjects.length,
+          link: `https://openneuro.org/datasets/${item.node.id}/versions/${item.node.latestSnapshot.tag}`,
+        };
+        array.push(dataset);
+      }
+    });
+    return array;
+  }
+
   onMount(async () => {
-    fetch("/openneuro-datasets.json")
-      .then(async (response) => {
-        let rawData = await response.json();
-        rawData.data.datasets.edges.forEach((item) => {
-          let dataset = {
-            id: item.node.id,
-            name: item.node.name,
-            modality: item.node.latestSnapshot.summary.modalities,
-            participants: item.node.latestSnapshot.summary.subjects.length,
-            link: `https://openneuro.org/datasets/${item.node.id}`,
-          };
-          datasets.push(dataset);
-        });
-        datasets = datasets;
-      })
-      .catch((error) => {
-        console.log(error);
-        toast.error("Failed to fetch datasets");
-        return;
-      });
+    const blobUrl =
+      "https://ylgmn9rprit35l1x.public.blob.vercel-storage.com/latest-6KyqDZST2yOEmctOGcc63XQv47H4FX.txt";
+    axios.get(blobUrl).then((response) => {
+      let rawData = response.data;
+      let cached = blobToArray(rawData);
+      datasets = cached;
+    });
   });
 </script>
 
