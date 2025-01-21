@@ -42,7 +42,7 @@
       </div>
     {:else}
       <div class="flex-0">
-        <button class="btn btn-ghost" on:click={login}>Login</button>
+        <button class="btn btn-ghost" on:click={login} style="visibility: hidden;">Login</button>
       </div>
     {/if}
   </nav>
