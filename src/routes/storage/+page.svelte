@@ -10,6 +10,8 @@
   });
 </script>
 
+<a class="btn btn-primary btn-sm" href="/storage/create">Create</a>
+
 <table class="table w-full">
   <thead>
     <tr>
