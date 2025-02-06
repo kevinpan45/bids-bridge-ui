@@ -6,11 +6,19 @@
   let datasets = [];
 
   function collectDataset(datasetId) {
-    toast.error(`It's developing...`);
+    if (!datasetId) {
+      toast.error("Dataset ID is required.");
+      return;
+    }
+    axios
+      .post(`/api/openneuro/${datasetId}/collections`)
+      .then((response) => {
+        toast.success(`Dataset ${datasetId} is collecting.`);
+      });
   }
 
   onMount(async () => {
-    axios.get("/api/bids/openneuro/datasets").then((response) => {
+    axios.get("/api/openneuro/bids").then((response) => {
       let items = response.data;
       items.forEach((item) => {
         item.link = `https://openneuro.org/datasets/${item.uid}/versions/${item.version}`;
@@ -28,6 +36,7 @@
       <th>Modality</th>
       <th>Provider</th>
       <th>Participants</th>
+      <th>Size</th>
       <th>Operation</th>
     </tr>
   </thead>
@@ -45,6 +54,13 @@
         <td>{dataset.modality}</td>
         <td>OpenNeuro</td>
         <td>{dataset.participants}</td>
+        <td>
+          {#if dataset.size >= 1024 * 1024 * 1024}
+            {(dataset.size / (1024 * 1024 * 1024)).toFixed(2)} GB
+          {:else}
+            {(dataset.size / (1024 * 1024)).toFixed(2)} MB
+          {/if}
+        </td>
         <td>
           <button
             class="btn btn-primary btn-xs"
