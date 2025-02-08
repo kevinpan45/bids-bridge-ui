@@ -4,6 +4,7 @@
   import toast from "svelte-french-toast";
 
   let storages = [];
+  let storage = {};
   onMount(() => {
     axios.get("/api/storages").then((res) => {
       storages = res.data;
@@ -42,15 +43,20 @@
           ></td
         >
         <td>{storage.provider}</td>
-        <td>{storage.endpoint ?? "-"}</td>
-        <td>{storage.region}</td>
+        <td>{storage.endpoint}</td>
+        <td>{storage.region ?? "-"}</td>
         <td>{storage.bucket}</td>
-        <td>{storage.prefix}</td>
-        <td
-          ><button class="btn btn-primary btn-xs" on:click={load(storage)}
+        <td>{storage.prefix ?? "-"}</td>
+        <td>
+          <button class="btn btn-primary btn-xs" on:click={load(storage)}
             >Load</button
-          ></td
-        >
+          >
+          <button
+            class="btn btn-primary btn-xs"
+            on:click={(window.location.href = `/storage/update?id=${storage.id}`)}
+            >update</button
+          >
+        </td>
       </tr>
     {/each}
   </tbody>
