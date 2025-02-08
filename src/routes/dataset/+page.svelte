@@ -44,7 +44,18 @@
     }
     axios
       .post(
-        `/api/jobs?name=${jobParams.name}&group=${jobParams.group}&pipelineId=${jobParams.pipelineId}&datasetId=${jobParams.datasetId}`
+        "/api/jobs",
+        {
+          name: jobParams.name,
+          group: jobParams.group,
+          pipelineId: jobParams.pipelineId,
+          datasetId: jobParams.datasetId,
+        },
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
       )
       .then((res) => {
         toast.success("Job created successfully");
