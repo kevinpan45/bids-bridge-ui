@@ -48,9 +48,9 @@
         <td>{pipeline.provider}</td>
         <td>{pipeline.workflow}</td>
         <td>
-          <button class="btn btn-primary btn-xs" on:click={run(pipeline.id)}
+          <!-- <button class="btn btn-primary btn-xs" on:click={run(pipeline.id)}
             >Run</button
-          >
+          > -->
         </td>
       </tr>
     {/each}

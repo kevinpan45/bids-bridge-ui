@@ -6,42 +6,24 @@
   let datasets = [];
 
   function collectDataset(datasetId) {
-    toast.error(`It's developing...`);
-  }
-
-  function blobToArray(rawData) {
-    let array = [];
-    // read line
-    let lines = rawData.split("\n");
-    lines.forEach((line) => {
-      if (line) {
-        let item;
-        try {
-          item = JSON.parse(line);
-        } catch (error) {
-          console.error("Error parsing JSON string: " + line);
-          return;
-        }
-        let dataset = {
-          id: item.node.id,
-          name: item.node.latestSnapshot.description.Name,
-          modality: item.node.latestSnapshot.summary.modalities,
-          participants: item.node.latestSnapshot.summary.subjects.length,
-          link: `https://openneuro.org/datasets/${item.node.id}/versions/${item.node.latestSnapshot.tag}`,
-        };
-        array.push(dataset);
-      }
-    });
-    return array;
+    if (!datasetId) {
+      toast.error("Dataset ID is required.");
+      return;
+    }
+    axios
+      .post(`/api/openneuro/${datasetId}/collections`)
+      .then((response) => {
+        toast.success(`Dataset ${datasetId} is collecting.`);
+      });
   }
 
   onMount(async () => {
-    const blobUrl =
-      "https://ylgmn9rprit35l1x.public.blob.vercel-storage.com/latest-6KyqDZST2yOEmctOGcc63XQv47H4FX.txt";
-    axios.get(blobUrl).then((response) => {
-      let rawData = response.data;
-      let cached = blobToArray(rawData);
-      datasets = cached;
+    axios.get("/api/openneuro/bids").then((response) => {
+      let items = response.data;
+      items.forEach((item) => {
+        item.link = `https://openneuro.org/datasets/${item.doi}/versions/${item.version}`;
+      });
+      datasets = items;
     });
   });
 </script>
@@ -54,6 +36,7 @@
       <th>Modality</th>
       <th>Provider</th>
       <th>Participants</th>
+      <th>Size</th>
       <th>Operation</th>
     </tr>
   </thead>
@@ -62,7 +45,7 @@
       <tr>
         <td>
           <a href={dataset.link} target="_blank" class="link link-primary">
-            {dataset.id}
+            {dataset.doi}
           </a>
         </td>
         <td class="max-w-96 tooltip tooltip-right" data-tip={dataset.name}>
@@ -72,9 +55,16 @@
         <td>OpenNeuro</td>
         <td>{dataset.participants}</td>
         <td>
+          {#if dataset.size >= 1024 * 1024 * 1024}
+            {(dataset.size / (1024 * 1024 * 1024)).toFixed(2)} GB
+          {:else}
+            {(dataset.size / (1024 * 1024)).toFixed(2)} MB
+          {/if}
+        </td>
+        <td>
           <button
             class="btn btn-primary btn-xs"
-            on:click={collectDataset(dataset.id)}>Collect</button
+            on:click={collectDataset(dataset.doi)}>Collect</button
           >
         </td>
       </tr>

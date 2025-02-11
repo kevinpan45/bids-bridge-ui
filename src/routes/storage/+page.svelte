@@ -1,14 +1,24 @@
 <script>
   import axios from "axios";
   import { onMount } from "svelte";
+  import toast from "svelte-french-toast";
 
   let storages = [];
+  let storage = {};
   onMount(() => {
-    axios.get("/api/bids/storages").then((res) => {
+    axios.get("/api/storages").then((res) => {
       storages = res.data;
     });
   });
+
+  function load(storage) {
+    axios.put(`/api/storages/${storage.id}/datasets`).then((res) => {
+      toast.success(`Storage ${storage.name} is loaded.`);
+    });
+  }
 </script>
+
+<a class="btn btn-primary btn-sm" href="/storage/create">Create</a>
 
 <table class="table w-full">
   <thead>
@@ -20,6 +30,7 @@
       <th>Region</th>
       <th>Bucket</th>
       <th>Prefix</th>
+      <th>Ops</th>
     </tr>
   </thead>
   <tbody>
@@ -32,10 +43,20 @@
           ></td
         >
         <td>{storage.provider}</td>
-        <td>{storage.endpoint ?? "-"}</td>
-        <td>{storage.region}</td>
+        <td>{storage.endpoint}</td>
+        <td>{storage.region ?? "-"}</td>
         <td>{storage.bucket}</td>
-        <td>{storage.prefix}</td>
+        <td>{storage.prefix ?? "-"}</td>
+        <td>
+          <button class="btn btn-primary btn-xs" on:click={load(storage)}
+            >Load</button
+          >
+          <button
+            class="btn btn-primary btn-xs"
+            on:click={(window.location.href = `/storage/update?id=${storage.id}`)}
+            >update</button
+          >
+        </td>
       </tr>
     {/each}
   </tbody>
