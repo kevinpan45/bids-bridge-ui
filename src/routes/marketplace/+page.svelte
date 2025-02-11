@@ -21,7 +21,7 @@
     axios.get("/api/openneuro/bids").then((response) => {
       let items = response.data;
       items.forEach((item) => {
-        item.link = `https://openneuro.org/datasets/${item.uid}/versions/${item.version}`;
+        item.link = `https://openneuro.org/datasets/${item.doi}/versions/${item.version}`;
       });
       datasets = items;
     });
@@ -45,7 +45,7 @@
       <tr>
         <td>
           <a href={dataset.link} target="_blank" class="link link-primary">
-            {dataset.uid}
+            {dataset.doi}
           </a>
         </td>
         <td class="max-w-96 tooltip tooltip-right" data-tip={dataset.name}>
