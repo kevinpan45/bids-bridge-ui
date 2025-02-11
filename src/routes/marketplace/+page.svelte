@@ -64,7 +64,7 @@
         <td>
           <button
             class="btn btn-primary btn-xs"
-            on:click={collectDataset(dataset.uid)}>Collect</button
+            on:click={collectDataset(dataset.doi)}>Collect</button
           >
         </td>
       </tr>
