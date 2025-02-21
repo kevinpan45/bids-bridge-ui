@@ -10,23 +10,9 @@
   }
 
   onMount(() => {
-    axios
-      .get(
-        "https://ylgmn9rprit35l1x.public.blob.vercel-storage.com/bids-app-26lODF7O2cUzqm9bngpf7oW5v2FANr.json"
-      )
-      .then((response) => {
-        let apps = response.data.apps;
-        apps.forEach((app) => {
-          pipelines.push({
-            id: app.dh,
-            name: app.description,
-            version: "-",
-            provider: "BIDS Standard",
-            workflow: app.gh,
-          });
-        });
-        pipelines = pipelines;
-      });
+    axios.get("/api/pipelines").then((response) => {
+      pipelines = response.data;
+    });
   });
 </script>
 
@@ -45,7 +31,7 @@
       <tr>
         <td>{pipeline.name}</td>
         <td>{pipeline.version}</td>
-        <td>{pipeline.provider}</td>
+        <td>{pipeline.provider ?? 'BIDS Apps'}</td>
         <td>{pipeline.workflow}</td>
         <td>
           <!-- <button class="btn btn-primary btn-xs" on:click={run(pipeline.id)}
