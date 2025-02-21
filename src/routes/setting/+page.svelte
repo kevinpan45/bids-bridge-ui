@@ -1,24 +1,23 @@
 <script>
   import { onMount } from "svelte";
   import toast from "svelte-french-toast";
+  import axios from "axios";
 
-  let engine = {
-    apiServer: "https://kubernetes.default.svc",
-    namespace: "pipeline",
-    token: "",
-  }
+  let engine = {};
 
   function updateEngine() {
     // engine attrs cannot be blank
-    if (!engine.apiServer || !engine.namespace || !engine.token) {
+    if (!engine.apiServer && !engine.namespace && !engine.token) {
       toast.error("Please fill in all fields");
       return;
     }
-    toast.success("Engine updated successfully");
+    toast.error("Not implemented yet");
   }
 
   onMount(() => {
-    
+    axios.get("/api/settings/engines").then((res) => {
+      engine = res.data;
+    });
   });
 </script>
 
@@ -30,22 +29,37 @@
           <label class="label">
             <span class="label-text">API Server</span>
           </label>
-          <input type="text" class="input input-bordered" required value={engine.apiServer} />
+          <input
+            type="text"
+            class="input input-bordered"
+            required
+            bind:value={engine.serverUrl}
+          />
         </div>
         <div class="form-control">
           <label class="label">
             <span class="label-text">Namespace</span>
           </label>
-          <input type="text" class="input input-bordered" required value={engine.namespace} />
+          <input
+            type="text"
+            class="input input-bordered"
+            required
+            bind:value={engine.namespace}
+          />
         </div>
         <div class="form-control">
           <label class="label">
             <span class="label-text">Token</span>
           </label>
-          <input type="password" class="input input-bordered" required />
+          <input
+            type="password"
+            bind:value={engine.token}
+            class="input input-bordered"
+          />
         </div>
         <div class="form-control mt-6">
-          <button class="btn btn-primary" on:click={updateEngine}>Submit</button>
+          <button class="btn btn-primary" on:click={updateEngine}>Submit</button
+          >
         </div>
       </form>
     </div>
