@@ -7,12 +7,9 @@
   import toast, { Toaster } from "svelte-french-toast";
   import Navbar from "$component/Navbar.svelte";
   import Sidebar from "$component/Sidebar.svelte";
-  import { createAuth0Client } from "@auth0/auth0-spa-js";
 
   // Inject vercel analytics
   injectAnalytics();
-
-  let auth0Client;
 
   // Inject vercel analytics
   injectAnalytics();
@@ -44,48 +41,14 @@
   );
 
   async function login() {
-    await auth0Client.loginWithRedirect({
-      authorizationParams: {
-        client_id: import.meta.env.VITE_AUTH0_CLIENT_ID,
-      },
-    });
-    const user = await auth0Client.getUser();
-    console.log(user);
+    
   }
 
   async function logout() {
-    await auth0Client.logout({
-      logoutParams: {
-        returnTo: window.location.origin,
-      },
-    });
+    
   }
 
   onMount(async () => {
-    if (!auth0Client) {
-      auth0Client = await createAuth0Client({
-        domain: import.meta.env.VITE_AUTH0_DOMAIN,
-        client_id: import.meta.env.VITE_AUTH0_CLIENT_ID,
-        authorizationParams: {
-          redirect_uri: import.meta.env.VITE_AUTH0_CALLBACK_URL,
-        },
-      });
-    }
-
-    if (
-      location.search.includes("state=") &&
-      (location.search.includes("code=") || location.search.includes("error="))
-    ) {
-      await auth0Client.handleRedirectCallback();
-      window.history.replaceState({}, document.title, "/");
-    }
-
-    const isAuthenticated = await auth0Client.isAuthenticated();
-    if (isAuthenticated) {
-      const user = await auth0Client.getUser();
-      username = user.name;
-    }
-
     layoutMounted = true;
     collapsed = sessionStorage.getItem("sidebar-collapsed") === "true";
   });
