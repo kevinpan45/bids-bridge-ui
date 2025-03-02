@@ -9,7 +9,7 @@
   export let closeDrawer;
   // export let openDrawer;
 
-  let pages = getMenus();
+  let menus = getMenus();
   export let drawerSidebarScrollY;
   export let collapsed;
   $: switchNavbarStyle = drawerSidebarScrollY > 40 ? true : false;
@@ -51,7 +51,7 @@
 <div class="h-4" />
 
 <ul class="menu px-4 py-0">
-  {#each pages as { name, href, icon, badge, badgeclass, highlightAnotherItem, deprecated, items, target, highlight, link, enabled, alias }}
+  {#each menus as { name, href, icon, badge, badgeclass, highlightAnotherItem, deprecated, items, target, highlight, link, enabled, alias }}
     {#if enabled}
       <SidebarMenuItem
         {closeDrawer}
