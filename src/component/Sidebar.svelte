@@ -42,7 +42,8 @@
       role="button"
       class={`link link-hover inline-block font-mono text-xs ${collapsed ? "!hidden" : ""}`}
     >
-      {serverVersion}
+    <!-- UI Version on Bar -->
+      <!-- {serverVersion} -->
     </div>
   </a>
 </div>
