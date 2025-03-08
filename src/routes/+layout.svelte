@@ -18,14 +18,7 @@
 
   let layoutMounted = false;
 
-  const sideBarCollapsedWidth = 1024;
-
-  let lockSiderbar = {
-    isLocked: false,
-    isCollapsed: false,
-  };
-
-  $: collapsed = innerWidth < sideBarCollapsedWidth;
+  let collapsed = false;
 
   axios.defaults.baseURL = import.meta.env.VITE_API_SERVER;
 
@@ -58,40 +51,7 @@
   const onClickSideBarCollapse = () => {
     sessionStorage.setItem("sidebar-collapsed", !collapsed);
     collapsed = !collapsed;
-    lockSiderbar = {
-      isLocked: true,
-      isCollapsed: collapsed,
-    };
   };
-
-  $: {
-    const { isLocked, isCollapsed } = lockSiderbar;
-    if (isLocked) {
-      // case: 窗口size足够大，手动收起菜单
-      if (isCollapsed) {
-        if (innerWidth < sideBarCollapsedWidth) {
-          lockSiderbar = {
-            isLocked: false,
-            isCollapsed,
-          };
-        } else {
-          collapsed = true;
-        }
-      }
-      // case: 窗口size小于sideBarCollapsedWidth，手动展开菜单
-      else {
-        if (innerWidth >= sideBarCollapsedWidth) {
-          lockSiderbar = {
-            isLocked: false,
-            isCollapsed,
-          };
-        } else {
-          collapsed = false;
-        }
-      }
-    } else {
-    }
-  }
 </script>
 
 <svelte:window bind:innerWidth />
