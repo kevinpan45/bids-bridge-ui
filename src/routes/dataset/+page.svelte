@@ -2,6 +2,7 @@
   import axios from "axios";
   import { onMount } from "svelte";
   import toast from "svelte-french-toast";
+  import TimeView from "$component/TimeView.svelte";
 
   let datasets = [];
   let dataset = {};
@@ -94,7 +95,7 @@
         <td>{dataset.doi}</td>
         <td>{dataset.version}</td>
         <td>{dataset.storagePath}</td>
-        <td>{dataset.createdAt}</td>
+        <td><TimeView datetime={dataset.createdAt} /></td>
         <td
           ><button
             class="btn btn-primary btn-xs"
