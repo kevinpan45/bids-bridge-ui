@@ -24,7 +24,7 @@
 	"type": "module",
 	"dependencies": {
 		"@vercel/analytics": "^1.4.1",
-		"axios": "1.8.1",
+		"axios": "1.8.3",
 		"svelte-french-toast": "1.2.0"
 	}
 }
