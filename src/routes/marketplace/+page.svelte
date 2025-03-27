@@ -12,7 +12,7 @@
       toast.error("Dataset ID is required.");
       return;
     }
-    axios.post(`/api/openneuro/${datasetId}/collections`).then((response) => {
+    axios.post(`/api/openneuro/${datasetId}/collections?storageId=1`).then((response) => {
       toast.success(`Dataset ${datasetId} is collecting.`);
     });
   }
