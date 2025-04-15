@@ -4,12 +4,10 @@
   import Icon from "$component/icon/Icon.svelte";
   import axios from "axios";
   import { onMount } from "svelte";
+  import { page } from "$app/stores";
   import toast, { Toaster } from "svelte-french-toast";
   import Navbar from "$component/Navbar.svelte";
   import Sidebar from "$component/Sidebar.svelte";
-
-  // Inject vercel analytics
-  injectAnalytics();
 
   // Inject vercel analytics
   injectAnalytics();
@@ -34,12 +32,10 @@
   );
 
   async function login() {
-    
+    window.location.href = "/login";
   }
 
-  async function logout() {
-    
-  }
+  async function logout() {}
 
   onMount(async () => {
     layoutMounted = true;
@@ -52,6 +48,23 @@
     sessionStorage.setItem("sidebar-collapsed", !collapsed);
     collapsed = !collapsed;
   };
+
+  // Load protected routes from environment variable
+  const protectedRoutes =
+    import.meta.env.VITE_PROTECTED_ROUTES?.split(",") || [];
+
+  // Simulated authentication check (replace with real auth logic)
+  let isAuthenticated = false; // Update this based on actual authentication state
+
+  $: {
+    if (
+      typeof window !== "undefined" &&
+      protectedRoutes.includes($page.url.pathname) &&
+      !isAuthenticated
+    ) {
+      window.location.href = "/login";
+    }
+  }
 </script>
 
 <svelte:window bind:innerWidth />
