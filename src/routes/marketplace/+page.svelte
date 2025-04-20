@@ -2,6 +2,19 @@
   import axios from "axios";
   import { onMount } from "svelte";
   import toast from "svelte-french-toast";
+  import Pagination from "$component/Pagination.svelte";
+
+  let bidsAppPage = {
+    size: 10,
+    total: 0,
+    current: 1,
+  };
+
+  let datasetPage = {
+    size: 10,
+    total: 0,
+    current: 1,
+  };
 
   let datasets = [];
   let bidsApps = [];
@@ -12,23 +25,49 @@
       toast.error("Dataset ID is required.");
       return;
     }
-    axios.post(`/api/openneuro/${datasetId}/collections?storageId=1`).then((response) => {
-      toast.success(`Dataset ${datasetId} is collecting.`);
-    });
+    axios
+      .post(`/api/openneuro/${datasetId}/collections?storageId=1`)
+      .then((response) => {
+        toast.success(`Dataset ${datasetId} is collecting.`);
+      });
+  }
+
+  function reloadDatasetPageTable() {
+    axios
+      .get("/api/openneuro/bids", {
+        params: {
+          page: datasetPage.current,
+          size: datasetPage.size,
+        },
+      })
+      .then((res) => {
+        datasetPage.total = res.data.total;
+        let items = res.data.records;
+        items.forEach((item) => {
+          item.link = `https://openneuro.org/datasets/${item.doi}/versions/${item.version}`;
+        });
+        datasets = items;
+      });
+  }
+
+  function reloadBidsAppPageTable() {
+    axios
+      .get("/api/bids-apps", {
+        params: {
+          page: bidsAppPage.current,
+          size: bidsAppPage.size,
+        },
+      })
+      .then((res) => {
+        bidsAppPage.total = res.data.total;
+        bidsApps = res.data.records;
+      });
   }
 
   onMount(async () => {
-    axios.get("/api/openneuro/bids").then((response) => {
-      let items = response.data;
-      items.forEach((item) => {
-        item.link = `https://openneuro.org/datasets/${item.doi}/versions/${item.version}`;
-      });
-      datasets = items;
-    });
+    reloadDatasetPageTable();
 
-    axios.get("/api/bids-apps").then((response) => {
-      bidsApps = response.data;
-    });
+    reloadBidsAppPageTable();
   });
 </script>
 
@@ -80,13 +119,14 @@
           <td>
             <button
               class="btn btn-primary btn-xs"
-              on:click={collectDataset(dataset.doi)}>Collect</button
+              on:click={() => collectDataset(dataset.doi)}>Collect</button
             >
           </td>
         </tr>
       {/each}
     </tbody>
   </table>
+  <Pagination page={datasetPage} reloadPageTable={reloadDatasetPageTable} />
 {:else if activeTab === "pipelines"}
   <table class="table table-compact w-full">
     <thead>
@@ -117,4 +157,5 @@
       {/each}
     </tbody>
   </table>
+  <Pagination page={bidsAppPage} reloadPageTable={reloadBidsAppPageTable} />
 {/if}
