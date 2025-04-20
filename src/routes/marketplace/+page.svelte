@@ -3,6 +3,7 @@
   import { onMount } from "svelte";
   import toast from "svelte-french-toast";
   import Pagination from "$component/Pagination.svelte";
+  import LoadingOverlay from "$component/LoadingOverlay.svelte";
 
   let bidsAppPage = {
     size: 10,
@@ -19,20 +20,32 @@
   let datasets = [];
   let bidsApps = [];
   let activeTab = "datasets";
+  
+  // 使用单一的加载状态标记和加载类型
+  let isLoading = false;
+  let loadingType = ""; // 可以是 "dataset", "bidsApp", "collecting" 等
 
   function collectDataset(datasetId) {
     if (!datasetId) {
       toast.error("Dataset ID is required.");
       return;
     }
+    isLoading = true;
+    loadingType = "collecting";
     axios
       .post(`/api/openneuro/${datasetId}/collections?storageId=1`)
       .then((response) => {
         toast.success(`Dataset ${datasetId} is collecting.`);
+      })
+      .finally(() => {
+        isLoading = false;
+        loadingType = "";
       });
   }
 
   function reloadDatasetPageTable() {
+    isLoading = true;
+    loadingType = "dataset";
     axios
       .get("/api/openneuro/bids", {
         params: {
@@ -47,10 +60,16 @@
           item.link = `https://openneuro.org/datasets/${item.doi}/versions/${item.version}`;
         });
         datasets = items;
+      })
+      .finally(() => {
+        isLoading = false;
+        loadingType = "";
       });
   }
 
   function reloadBidsAppPageTable() {
+    isLoading = true;
+    loadingType = "bidsApp";
     axios
       .get("/api/bids-apps", {
         params: {
@@ -61,12 +80,15 @@
       .then((res) => {
         bidsAppPage.total = res.data.total;
         bidsApps = res.data.records;
+      })
+      .finally(() => {
+        isLoading = false;
+        loadingType = "";
       });
   }
 
   onMount(async () => {
     reloadDatasetPageTable();
-
     reloadBidsAppPageTable();
   });
 </script>
@@ -83,79 +105,98 @@
 </div>
 
 {#if activeTab === "datasets"}
-  <table class="table table-compact w-full">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Modality</th>
-        <th>Provider</th>
-        <th>Participants</th>
-        <th>Size</th>
-        <th>Operation</th>
-      </tr>
-    </thead>
-    <tbody>
-      {#each datasets as dataset}
+  <div class="relative">
+    <LoadingOverlay 
+      isLoading={isLoading && loadingType === "dataset"} 
+      text="Loading datasets..." 
+      position="absolute" 
+    />
+    <table class="table table-compact w-full">
+      <thead>
         <tr>
-          <td>
-            <a href={dataset.link} target="_blank" class="link link-primary">
-              {dataset.doi}
-            </a>
-          </td>
-          <td class="max-w-96 tooltip tooltip-right" data-tip={dataset.name}>
-            <p class="truncate ...">{dataset.name}</p>
-          </td>
-          <td>{dataset.modality}</td>
-          <td>OpenNeuro</td>
-          <td>{dataset.participants}</td>
-          <td>
-            {#if dataset.size >= 1024 * 1024 * 1024}
-              {(dataset.size / (1024 * 1024 * 1024)).toFixed(2)} GB
-            {:else}
-              {(dataset.size / (1024 * 1024)).toFixed(2)} MB
-            {/if}
-          </td>
-          <td>
-            <button
-              class="btn btn-primary btn-xs"
-              on:click={() => collectDataset(dataset.doi)}>Collect</button
-            >
-          </td>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Modality</th>
+          <th>Provider</th>
+          <th>Participants</th>
+          <th>Size</th>
+          <th>Operation</th>
         </tr>
-      {/each}
-    </tbody>
-  </table>
-  <Pagination page={datasetPage} reloadPageTable={reloadDatasetPageTable} />
+      </thead>
+      <tbody>
+        {#each datasets as dataset}
+          <tr>
+            <td>
+              <a href={dataset.link} target="_blank" class="link link-primary">
+                {dataset.doi}
+              </a>
+            </td>
+            <td class="max-w-96 tooltip tooltip-right" data-tip={dataset.name}>
+              <p class="truncate ...">{dataset.name}</p>
+            </td>
+            <td>{dataset.modality}</td>
+            <td>OpenNeuro</td>
+            <td>{dataset.participants}</td>
+            <td>
+              {#if dataset.size >= 1024 * 1024 * 1024}
+                {(dataset.size / (1024 * 1024 * 1024)).toFixed(2)} GB
+              {:else}
+                {(dataset.size / (1024 * 1024)).toFixed(2)} MB
+              {/if}
+            </td>
+            <td>
+              <button
+                class="btn btn-primary btn-xs"
+                on:click={() => collectDataset(dataset.doi)}>Collect</button
+              >
+            </td>
+          </tr>
+        {/each}
+      </tbody>
+    </table>
+    <Pagination page={datasetPage} reloadPageTable={reloadDatasetPageTable} />
+  </div>
 {:else if activeTab === "pipelines"}
-  <table class="table table-compact w-full">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Version</th>
-        <th>Description</th>
-        <th>Operation</th>
-      </tr>
-    </thead>
-    <tbody>
-      {#each bidsApps as bidsApp}
+  <div class="relative">
+    <LoadingOverlay 
+      isLoading={isLoading && loadingType === "bidsApp"} 
+      text="Loading pipelines..." 
+      position="absolute" 
+    />
+    <table class="table table-compact w-full">
+      <thead>
         <tr>
-          <td class="max-w-64 tooltip tooltip-right" data-tip={bidsApp.name}>
-            <p class="truncate ...">{bidsApp.name}</p>
-          </td>
-          <td>{bidsApp.version}</td>
-          <td
-            class="max-w-96 tooltip tooltip-right"
-            data-tip={bidsApp.description}
-          >
-            <p class="truncate ...">{bidsApp.description}</p>
-          </td>
-          <td>
-            <button class="btn btn-primary btn-xs">Deploy</button>
-          </td>
+          <th>Name</th>
+          <th>Version</th>
+          <th>Description</th>
+          <th>Operation</th>
         </tr>
-      {/each}
-    </tbody>
-  </table>
-  <Pagination page={bidsAppPage} reloadPageTable={reloadBidsAppPageTable} />
+      </thead>
+      <tbody>
+        {#each bidsApps as bidsApp}
+          <tr>
+            <td class="max-w-64 tooltip tooltip-right" data-tip={bidsApp.name}>
+              <p class="truncate ...">{bidsApp.name}</p>
+            </td>
+            <td>{bidsApp.version}</td>
+            <td
+              class="max-w-96 tooltip tooltip-right"
+              data-tip={bidsApp.description}
+            >
+              <p class="truncate ...">{bidsApp.description}</p>
+            </td>
+            <td>
+              <button class="btn btn-primary btn-xs">Deploy</button>
+            </td>
+          </tr>
+        {/each}
+      </tbody>
+    </table>
+    <Pagination page={bidsAppPage} reloadPageTable={reloadBidsAppPageTable} />
+  </div>
 {/if}
+
+<LoadingOverlay 
+  isLoading={isLoading && loadingType === "collecting"} 
+  text="Collecting dataset..." 
+/>
