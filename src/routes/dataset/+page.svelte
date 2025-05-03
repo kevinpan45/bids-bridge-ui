@@ -93,7 +93,7 @@
           ></td
         >
         <td>{dataset.doi}</td>
-        <td>{dataset.version}</td>
+        <td>{dataset.version || ""}</td>
         <td>{dataset.storagePath}</td>
         <td><TimeView datetime={dataset.createdAt} /></td>
         <td
