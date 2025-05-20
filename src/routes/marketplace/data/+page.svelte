@@ -5,6 +5,9 @@
   import Pagination from "$component/Pagination.svelte";
   import LoadingOverlay from "$component/LoadingOverlay.svelte";
 
+  let providers = ["All", "OpenNeuro", "CCNDC"];
+  let provider = providers[0];
+
   let page = {
     size: 10,
     total: 0,
@@ -37,6 +40,7 @@
         params: {
           page: page.current,
           size: page.size,
+          provider: provider === "All" ? null : provider,
         },
       })
       .then((res) => {
@@ -52,12 +56,30 @@
       });
   }
 
+  function handleProviderChange(event) {
+    provider = event.target.value;
+    reloadPageTable();
+  }
+
   onMount(async () => {
     reloadPageTable();
   });
 </script>
 
 <div class="relative">
+  <div class="flex justify-between items-center mb-4">
+    <div class="form-control w-64">
+      <select
+        class="select select-bordered w-full"
+        bind:value={provider}
+        on:change={handleProviderChange}
+      >
+        {#each providers as provider}
+          <option value={provider}>{provider}</option>
+        {/each}
+      </select>
+    </div>
+  </div>
   <LoadingOverlay {isLoading} text="Loading data..." position="absolute" />
   <table class="table table-compact w-full">
     <thead>
@@ -102,5 +124,5 @@
       {/each}
     </tbody>
   </table>
-  <Pagination {page} reloadPageTable={reloadPageTable} />
+  <Pagination {page} {reloadPageTable} />
 </div>
