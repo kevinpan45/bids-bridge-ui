@@ -67,7 +67,11 @@
         page.total = res.data.total;
         let items = res.data.records;
         items.forEach((item) => {
-          item.link = `https://openneuro.org/datasets/${item.doi}/versions/${item.version}`;
+          if (provider === "OpenNeuro") {
+            item.link = `https://openneuro.org/datasets/${item.doi}/versions/${item.version}`;
+          } else if (provider === "CCNDC") {
+            item.link = `https://doi.org/${item.doi}`;
+          }
         });
         datasets = items;
       })
@@ -78,11 +82,26 @@
 
   function handleProviderChange(event) {
     provider = event.target.value;
+    page.current = 1;
     reloadPageTable();
   }
 
   function showProviderDescriptions() {
     showDescriptionModal = true;
+  }
+
+  function fetchProviderDatasets(provider) {
+    const fetchPromise = axios.post(
+      "/api/collections/datasets/tasks?provider=" + provider,
+    );
+
+    toast.promise(fetchPromise, {
+      loading: `Fetching datasets from ${provider}...`,
+      success: `Datasets from ${provider} are being collected.`,
+      error: `Failed to fetch datasets from ${provider}.`,
+    });
+
+    return fetchPromise;
   }
 
   onMount(async () => {
@@ -103,10 +122,7 @@
             <option value={providerOption}>{providerOption}</option>
           {/each}
         </select>
-        <button
-          class="btn btn-ghost"
-          on:click={showProviderDescriptions}
-        >
+        <button class="btn btn-ghost" on:click={showProviderDescriptions}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -149,7 +165,11 @@
           </td>
           <td>{dataset.modality}</td>
           <td>OpenNeuro</td>
-          <td>{dataset.participants}</td>
+          <td
+            >{dataset.participants === -1
+              ? "Unknown"
+              : dataset.participants}</td
+          >
           <td>
             {#if dataset.size >= 1024 * 1024 * 1024}
               {(dataset.size / (1024 * 1024 * 1024)).toFixed(2)} GB
@@ -199,9 +219,17 @@
                   <td>{providerDescription.description}</td>
                   <th>
                     <a
-                      class="btn btn-ghost btn-xs"
+                      class="btn btn-ghost"
                       href={providerDescription.link}
                       target="_blank">WebSite</a
+                    >
+                  </th>
+                  <th>
+                    <button
+                      class="btn btn-ghost"
+                      on:click={() =>
+                        fetchProviderDatasets(providerDescription.name)}
+                      >Fetch Datasets</button
                     >
                   </th>
                 </tr>
