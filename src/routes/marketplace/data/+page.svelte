@@ -195,7 +195,7 @@
   <div
     class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center"
   >
-    <div class="bg-base-100 p-6 rounded-lg shadow-lg max-w-3xl w-full">
+    <div class="bg-base-100 p-6 rounded-lg shadow-lg max-w-6xl w-full">
       <h3 class="font-bold text-lg mb-4">Data Provider</h3>
       <ul class="menu bg-base-200 rounded-box w-full">
         <div class="overflow-x-auto">
