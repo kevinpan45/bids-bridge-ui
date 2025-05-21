@@ -3,7 +3,7 @@
   onMount(() => {});
 </script>
 
-<div class="hero min-h-screen">
+<div class="hero">
   <div class="hero-content flex-col lg:flex-row-reverse">
     <img
       alt="hero"
