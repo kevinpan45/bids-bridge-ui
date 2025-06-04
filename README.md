@@ -3,6 +3,17 @@ BIDS dataset collect application
 
 [Vercel Deployment](https://bids-collector-desktop.vercel.app)
 
+## Environment Variables
+
+### SVELTEKIT_BUILD_TYPE
+Controls the build type for the SvelteKit application. Set to `static` to build a static site with pre-rendered pages.
+
+**Usage:**
+```bash
+export SVELTEKIT_BUILD_TYPE=static 
+npm run build
+```
+
 ## Dockerize the application
 
 - Build Static files
