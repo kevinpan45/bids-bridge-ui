@@ -3,19 +3,55 @@
   import { onMount } from "svelte";
   import toast from "svelte-french-toast";
   import TimeView from "$component/TimeView.svelte";
+  import Pagination from "$component/Pagination.svelte";
+  import LoadingOverlay from "$component/LoadingOverlay.svelte";
 
   let datasets = [];
   let dataset = {};
+  let isLoading = false;
+  
+  let page = {
+    size: 10,
+    total: 0,
+    current: 1,
+  };
+  
   let jobParams = {
     name: null,
     group: null,
     pipelineId: null,
     datasetId: null,
   };
+  
+  function reloadPageTable() {
+    isLoading = true;
+    axios
+      .get("/api/datasets", {
+        params: {
+          page: page.current,
+          size: page.size,
+        },
+      })
+      .then((res) => {
+        // Handle both paginated and non-paginated responses
+        if (res.data.records) {
+          datasets = res.data.records;
+          page.total = res.data.total;
+        } else {
+          datasets = res.data;
+          page.total = res.data.length;
+        }
+      })
+      .catch((err) => {
+        toast.error("Failed to load datasets");
+      })
+      .finally(() => {
+        isLoading = false;
+      });
+  }
+  
   onMount(() => {
-    axios.get("/api/storages/1/datasets").then((res) => {
-      datasets = res.data;
-    });
+    reloadPageTable();
   });
   let pipelines = [];
   async function runDatasetJob(selected) {
@@ -71,41 +107,45 @@
 
 <!-- <a class="btn btn-primary btn-sm" href="/storage/create">Create</a> -->
 
-<table class="table w-full">
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Name</th>
-      <th>DOI</th>
-      <th>Version</th>
-      <th>Storage Path</th>
-      <th>Create Time</th>
-      <th>Ops</th>
-    </tr>
-  </thead>
-  <tbody>
-    {#each datasets as dataset}
+<div class="relative">
+  <LoadingOverlay {isLoading} text="Loading datasets..." position="absolute" />
+  <table class="table w-full">
+    <thead>
       <tr>
-        <td>{dataset.id}</td>
-        <td
-          ><a href="/storage/{dataset.id}" class="link link-primary"
-            >{dataset.name}</a
-          ></td
-        >
-        <td>{dataset.doi}</td>
-        <td>{dataset.version || ""}</td>
-        <td>{dataset.storagePath}</td>
-        <td><TimeView datetime={dataset.createdAt} /></td>
-        <td
-          ><button
-            class="btn btn-primary btn-xs"
-            on:click={runDatasetJob(dataset)}>Run</button
-          ></td
-        >
+        <th>ID</th>
+        <th>Name</th>
+        <th>DOI</th>
+        <th>Version</th>
+        <th>Storage Path</th>
+        <th>Create Time</th>
+        <th>Ops</th>
       </tr>
-    {/each}
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+      {#each datasets as dataset}
+        <tr>
+          <td>{dataset.id}</td>
+          <td
+            ><a href="/storage/{dataset.id}" class="link link-primary"
+              >{dataset.name}</a
+            ></td
+          >
+          <td>{dataset.doi}</td>
+          <td>{dataset.version || ""}</td>
+          <td>{dataset.storagePath}</td>
+          <td><TimeView datetime={dataset.createdAt} /></td>
+          <td
+            ><button
+              class="btn btn-primary btn-xs"
+              on:click={runDatasetJob(dataset)}>Run</button
+            ></td
+          >
+        </tr>
+      {/each}
+    </tbody>
+  </table>
+  <Pagination {page} {reloadPageTable} />
+</div>
 
 <!-- svelte-ignore a11y-label-has-associated-control -->
 <dialog class="modal" id="run_dataset_job_modal">
