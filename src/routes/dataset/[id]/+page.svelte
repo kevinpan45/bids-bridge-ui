@@ -4,11 +4,10 @@
   import { onMount } from "svelte";
   import FileTree from "$component/FileTree.svelte";
 
-  // get id from route parameters
   let id = $page.params.id;
   let dataset;
-
   let filePaths;
+  let showModal = false;
 
   function getWebsite() {
     return `https://doi.org/${dataset.doi}`;
@@ -19,6 +18,7 @@
       .get(`/api/datasets/${id}/files`)
       .then((response) => {
         filePaths = response.data;
+        showModal = true;
       })
       .catch((error) => {
         console.error("Error fetching files:", error);
@@ -47,15 +47,25 @@
       <p>DOI: {dataset.doi}</p>
       <p>Provider: {dataset.provider}</p>
       <div class="justify-end card-actions">
-        <a class="btn btn-primary" href={dataset.link} target="_blank"
-          >WebSite</a
-        >
+        <a class="btn btn-primary" href={dataset.link} target="_blank">WebSite</a>
         <button class="btn btn-primary" on:click={viewFiles}>View Files</button>
       </div>
     </div>
   </div>
 {/if}
 
-{#if filePaths}
-  <FileTree {filePaths} />
+{#if showModal}
+  <div class="modal modal-open">
+    <div class="modal-box">
+      <h3 class="text-lg font-bold">File Tree</h3>
+      {#if filePaths}
+        <FileTree {filePaths} />
+      {:else}
+        <p>No files available.</p>
+      {/if}
+      <div class="modal-action">
+        <button class="btn" on:click={() => (showModal = false)}>Close</button>
+      </div>
+    </div>
+  </div>
 {/if}
