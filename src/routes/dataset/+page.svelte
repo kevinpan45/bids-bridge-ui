@@ -126,7 +126,7 @@
         <tr>
           <td>{dataset.id}</td>
           <td
-            ><a href="/storage/{dataset.id}" class="link link-primary"
+            ><a href="/dataset/{dataset.id}" class="link link-primary"
               >{dataset.name}</a
             ></td
           >
