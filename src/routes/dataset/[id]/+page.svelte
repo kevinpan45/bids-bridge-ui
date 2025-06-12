@@ -48,7 +48,7 @@
       <p>Provider: {dataset.provider}</p>
       <div class="justify-end card-actions">
         <a class="btn btn-primary" href={dataset.link} target="_blank">WebSite</a>
-        <button class="btn btn-primary" on:click={viewFiles}>View Files</button>
+        <button class="btn btn-primary" on:click={viewFiles}>Files</button>
       </div>
     </div>
   </div>
