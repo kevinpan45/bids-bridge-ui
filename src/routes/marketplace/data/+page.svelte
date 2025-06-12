@@ -67,9 +67,13 @@
         page.total = res.data.total;
         let items = res.data.records;
         items.forEach((item) => {
-          if (provider === "OpenNeuro") {
-            item.link = `https://openneuro.org/datasets/${item.doi}/versions/${item.version}`;
-          } else if (provider === "CCNDC") {
+          if (item.provider === "OpenNeuro") {
+            if (isDoiFormat(item.doi)) {
+              item.link = `https://doi.org/${item.doi}`;
+            } else {
+              item.link = `https://openneuro.org/datasets/${item.doi}/versions/${item.version}`;
+            }
+          } else if (item.provider === "CCNDC") {
             item.link = `https://doi.org/${item.doi}`;
           }
         });
@@ -78,6 +82,12 @@
       .finally(() => {
         isLoading = false;
       });
+  }
+
+  function isDoiFormat(doi) {
+    // regex is 10\.\d{6}\/[^\s]+
+    const doiRegex = /^10\.\d{4,9}\/[-._;()/:A-Z0-9]+$/i;
+    return doiRegex.test(doi);
   }
 
   function handleProviderChange(event) {
@@ -110,11 +120,11 @@
 </script>
 
 <div class="relative">
-  <div class="flex justify-between items-center mb-4">
-    <div class="form-control w-64">
+  <div class="flex items-center justify-between mb-4">
+    <div class="w-64 form-control">
       <div class="flex items-center space-x-2">
         <select
-          class="select select-bordered w-full"
+          class="w-full select select-bordered"
           bind:value={provider}
           on:change={handleProviderChange}
         >
@@ -140,7 +150,7 @@
     </div>
   </div>
   <LoadingOverlay {isLoading} text="Loading data..." position="absolute" />
-  <table class="table table-compact w-full">
+  <table class="table w-full table-compact">
     <thead>
       <tr>
         <th>ID</th>
@@ -193,11 +203,11 @@
 <!-- Provider Description Modal -->
 {#if showDescriptionModal}
   <div
-    class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
   >
-    <div class="bg-base-100 p-6 rounded-lg shadow-lg max-w-6xl w-full">
-      <h3 class="font-bold text-lg mb-4">Data Provider</h3>
-      <ul class="menu bg-base-200 rounded-box w-full">
+    <div class="w-full max-w-6xl p-6 rounded-lg shadow-lg bg-base-100">
+      <h3 class="mb-4 text-lg font-bold">Data Provider</h3>
+      <ul class="w-full menu bg-base-200 rounded-box">
         <div class="overflow-x-auto">
           <table class="table">
             <tbody>
@@ -205,7 +215,7 @@
                 <tr>
                   <td>
                     <div class="avatar">
-                      <div class="mask h-12 w-12">
+                      <div class="w-12 h-12 mask">
                         <img
                           src={providerDescription.avatar}
                           alt="Avatar Tailwind CSS Component"
