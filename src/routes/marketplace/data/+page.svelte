@@ -37,16 +37,16 @@
   let datasets = [];
   let isLoading = false;
 
-  function collectDataset(datasetId) {
-    if (!datasetId) {
+  function collectDataset(id) {
+    if (!id) {
       toast.error("Dataset ID is required.");
       return;
     }
     isLoading = true;
     axios
-      .post(`/api/openneuro/${datasetId}/collections?storageId=1`)
+      .post(`/api/openneuro/${id}/collections?storageId=1`)
       .then((response) => {
-        toast.success(`Dataset ${datasetId} is collecting.`);
+        toast.success(`Dataset is collecting.`);
       })
       .finally(() => {
         isLoading = false;
@@ -190,7 +190,7 @@
           <td>
             <button
               class="btn btn-primary btn-xs"
-              on:click={() => collectDataset(dataset.doi)}>Collect</button
+              on:click={() => collectDataset(dataset.id)}>Collect</button
             >
           </td>
         </tr>
