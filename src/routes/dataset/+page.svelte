@@ -9,20 +9,20 @@
   let datasets = [];
   let dataset = {};
   let isLoading = false;
-  
+
   let page = {
     size: 10,
     total: 0,
     current: 1,
   };
-  
+
   let jobParams = {
     name: null,
     group: null,
     pipelineId: null,
     datasetId: null,
   };
-  
+
   function reloadPageTable() {
     isLoading = true;
     axios
@@ -49,7 +49,7 @@
         isLoading = false;
       });
   }
-  
+
   onMount(() => {
     reloadPageTable();
   });
@@ -92,7 +92,7 @@
           headers: {
             "Content-Type": "multipart/form-data",
           },
-        }
+        },
       )
       .then((res) => {
         toast.success("Job created successfully");
@@ -160,17 +160,6 @@
           <div class="stat-value w-full">
             <div class="form-control">
               <label class="label">
-                <span class="label-text">Job Group Name</span>
-              </label>
-              <input
-                type="text"
-                id="jobGroupName"
-                class="input input-bordered input-md w-auto"
-                bind:value={jobParams.group}
-              />
-            </div>
-            <div class="form-control">
-              <label class="label">
                 <span class="label-text">Job Name</span>
               </label>
               <input
@@ -178,6 +167,17 @@
                 id="jobName"
                 class="input input-bordered input-md w-auto"
                 bind:value={jobParams.name}
+              />
+            </div>
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Job Group Name</span>
+              </label>
+              <input
+                type="text"
+                id="jobGroupName"
+                class="input input-bordered input-md w-auto"
+                bind:value={jobParams.group}
               />
             </div>
           </div>

@@ -16,6 +16,8 @@
   });
 </script>
 
+<a class="btn btn-primary btn-sm" href="/pipeline/create">Create</a>
+
 <table class="table table-compact w-full">
   <thead>
     <tr>
