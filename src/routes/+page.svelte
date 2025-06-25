@@ -4,7 +4,7 @@
 </script>
 
 <div class="hero">
-  <div class="hero-content flex-col lg:flex-row-reverse">
+  <div class="flex-col hero-content lg:flex-row-reverse">
     <img
       alt="hero"
       src="https://img.daisyui.com/images/stock/photo-1635805737707-575885ab0820.webp"
@@ -16,6 +16,7 @@
         Manage work in the cloud, storage and pipeline secure execution on trusted workloads.
       </p>
       <button class="btn btn-primary">Get Started</button>
+      <button class="btn btn-primary" on:click={() => window.location.href = 'mailto:kevinpan45@163.com'}>Contact</button>
     </div>
   </div>
 </div>
