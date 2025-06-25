@@ -15,7 +15,7 @@
       <p class="py-6">
         Manage work in the cloud, storage and pipeline secure execution on trusted workloads.
       </p>
-      <button class="btn btn-primary">Get Started</button>
+      <button class="btn btn-primary" on:click={() => window.location.href = '/dataset'}>Get Started</button>
       <button class="btn btn-primary" on:click={() => window.location.href = 'mailto:kevinpan45@163.com'}>Contact</button>
     </div>
   </div>
