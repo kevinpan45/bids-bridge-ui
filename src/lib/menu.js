@@ -13,8 +13,8 @@ let menus = [
     { name: "pipeline", link: "/pipeline", alias: "Pipeline", icon: "pipeline", enabled: true },
     { name: "dataset", link: "/dataset", alias: "Dataset", icon: "dataset", enabled: true },
     { name: "storage", link: "/storage", alias: "Storage", icon: "storage", enabled: true },
-    { name: "profile", link: "/profile", alias: "Profile", icon: "profile", enabled: true },
-    { name: "setting", link: "/setting", alias: "Settings", icon: "setting", enabled: true },
+    { name: "workload", link: "/workload", alias: "Workload", icon: "workload", enabled: true },
+    // { name: "profile", link: "/profile", alias: "Profile", icon: "profile", enabled: true },
 ];
 
 export function getMenus() {

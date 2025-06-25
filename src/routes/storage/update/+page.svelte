@@ -7,8 +7,16 @@
 
   let storage = {};
 
+  // Credential modal state
+  let showCredentialModal = false;
+  let credentials = {
+    accessKey: "",
+    secretKey: "",
+  };
+
+  const id = $page.url.searchParams.get("id");
+
   onMount(() => {
-    const id = $page.url.searchParams.get("id");
     axios
       .get(`/api/storages/${id}`)
       .then((response) => {
@@ -21,17 +29,55 @@
 
   function update() {
     axios
-      .put(`/api/storages/${storage.id}`, storage)
+      .put(`/api/storages/${id}`, storage)
       .then((response) => {
         toast.success("Storage created successfully");
-        window.location.href = "/storage";
+        // hide modal
+        showCredentialModal = false;
       })
       .catch((error) => {
         toast.error("Failed to create storage");
       });
   }
 
-  function connect() {
+  function updateCredential() {
+    showCredentialModal = true;
+  }
+
+  function submitCredentials() {
+    if (!credentials.accessKey || !credentials.secretKey) {
+      toast.error("Please fill in both access key and secret key");
+      return;
+    }
+
+    const credentialData = {
+      accessKey: credentials.accessKey,
+      secretKey: credentials.secretKey,
+    };
+
+    axios
+      .put(`/api/storages/${storage.id}/credentials`, credentialData)
+      .then((response) => {
+        toast.success("Credentials updated successfully");
+        showCredentialModal = false;
+        // Clear the credential fields for security
+        credentials = {
+          accessKey: "",
+          secretKey: "",
+        };
+      })
+      .catch((error) => {
+        toast.error("Failed to update credentials");
+      });
+  }
+
+  function closeCredentialModal() {
+    showCredentialModal = false;
+    // Clear the credential fields when closing
+    credentials = {
+      accessKey: "",
+      secretKey: "",
+    };
   }
 </script>
 
@@ -75,28 +121,6 @@
         </div>
         <div class="form-control">
           <label class="label">
-            <span class="label-text">Access Key</span>
-          </label>
-          <input
-            type="text"
-            class="input input-bordered"
-            required
-            bind:value={storage.accessKey}
-          />
-        </div>
-        <div class="form-control">
-          <label class="label">
-            <span class="label-text">Secret Key</span>
-          </label>
-          <input
-            type="password"
-            class="input input-bordered"
-            required
-            bind:value={storage.secretKey}
-          />
-        </div>
-        <div class="form-control">
-          <label class="label">
             <span class="label-text">Bucket</span>
           </label>
           <input
@@ -128,9 +152,9 @@
         </div>
         <div class="form-control mt-6">
           <div class="flex justify-end space-x-2">
-            <!-- <button class="btn btn-primary" on:click={connect}
-                >Test Connection</button
-              > -->
+            <button class="btn btn-primary" on:click={updateCredential}
+              >Update Credential</button
+            >
             <button class="btn btn-primary" on:click={update}>Submit</button>
           </div>
         </div>
@@ -138,3 +162,48 @@
     </div>
   </div>
 </div>
+
+<!-- Credential Update Modal -->
+{#if showCredentialModal}
+  <!-- svelte-ignore a11y-label-has-associated-control -->
+  <div
+    class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center"
+  >
+    <div class="bg-base-100 p-6 rounded-lg shadow-lg max-w-md w-full">
+      <h3 class="font-bold text-lg mb-4">Update Storage Credentials</h3>
+
+      <div class="form-control mb-4">
+        <label class="label">
+          <span class="label-text">Access Key</span>
+        </label>
+        <input
+          type="text"
+          class="input input-bordered w-full"
+          placeholder="Enter access key"
+          bind:value={credentials.accessKey}
+        />
+      </div>
+
+      <div class="form-control mb-6">
+        <label class="label">
+          <span class="label-text">Secret Key</span>
+        </label>
+        <input
+          type="password"
+          class="input input-bordered w-full"
+          placeholder="Enter secret key"
+          bind:value={credentials.secretKey}
+        />
+      </div>
+
+      <div class="flex justify-end space-x-2">
+        <button class="btn btn-ghost" on:click={closeCredentialModal}>
+          Cancel
+        </button>
+        <button class="btn btn-primary" on:click={submitCredentials}>
+          Update
+        </button>
+      </div>
+    </div>
+  </div>
+{/if}
