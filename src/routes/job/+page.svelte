@@ -12,7 +12,7 @@
   });
 </script>
 
-<table class="table table-compact w-full">
+<table class="table w-full table-compact">
   <thead>
     <tr>
       <th>ID</th>
@@ -44,7 +44,7 @@
           {/if}
         </td>
         <td>{job.pipelineName}:{job.pipelineVersion}</td>
-        <td>{job.datasetDoi}</td>
+        <td><a class="link" href="/dataset/{job.datasetId}">{job.datasetDoi}</a></td>
         <td>{job.engineJobId}</td>
         <td>{job.artifactId ?? "-"}</td>
         <td><TimeView datetime={job.createdAt} /></td>
