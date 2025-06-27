@@ -51,11 +51,6 @@
           <button class="btn btn-primary btn-xs" on:click={load(storage)}
             >Load</button
           >
-          <button
-            class="btn btn-primary btn-xs"
-            on:click={(window.location.href = `/storage/update?id=${storage.id}`)}
-            >update</button
-          >
         </td>
       </tr>
     {/each}

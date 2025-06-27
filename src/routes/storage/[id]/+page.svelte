@@ -1,3 +1,5 @@
+<!-- This file has been deprecated. Please use the new route `/storage/[id]` for storage updates. -->
+
 <script>
   import toast from "svelte-french-toast";
   import axios from "axios";
@@ -14,7 +16,7 @@
     secretKey: "",
   };
 
-  const id = $page.url.searchParams.get("id");
+  let id = $page.params.id;
 
   onMount(() => {
     axios
@@ -81,9 +83,9 @@
   }
 </script>
 
-<div class="hero min-h-screen">
-  <div class="hero-content w-2/3 flex-col lg:flex-row-reverse">
-    <div class="card bg-base-200 w-full shrink-0 shadow-2xl">
+<div class="min-h-screen hero">
+  <div class="flex-col w-2/3 hero-content lg:flex-row-reverse">
+    <div class="w-full shadow-2xl card bg-base-200 shrink-0">
       <!-- svelte-ignore a11y-label-has-associated-control -->
       <form class="card-body">
         <div class="form-control">
@@ -150,7 +152,7 @@
             bind:value={storage.region}
           />
         </div>
-        <div class="form-control mt-6">
+        <div class="mt-6 form-control">
           <div class="flex justify-end space-x-2">
             <button class="btn btn-primary" on:click={updateCredential}
               >Update Credential</button
@@ -167,30 +169,30 @@
 {#if showCredentialModal}
   <!-- svelte-ignore a11y-label-has-associated-control -->
   <div
-    class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
   >
-    <div class="bg-base-100 p-6 rounded-lg shadow-lg max-w-md w-full">
-      <h3 class="font-bold text-lg mb-4">Update Storage Credentials</h3>
+    <div class="w-full max-w-md p-6 rounded-lg shadow-lg bg-base-100">
+      <h3 class="mb-4 text-lg font-bold">Update Storage Credentials</h3>
 
-      <div class="form-control mb-4">
+      <div class="mb-4 form-control">
         <label class="label">
           <span class="label-text">Access Key</span>
         </label>
         <input
           type="text"
-          class="input input-bordered w-full"
+          class="w-full input input-bordered"
           placeholder="Enter access key"
           bind:value={credentials.accessKey}
         />
       </div>
 
-      <div class="form-control mb-6">
+      <div class="mb-6 form-control">
         <label class="label">
           <span class="label-text">Secret Key</span>
         </label>
         <input
           type="password"
-          class="input input-bordered w-full"
+          class="w-full input input-bordered"
           placeholder="Enter secret key"
           bind:value={credentials.secretKey}
         />
