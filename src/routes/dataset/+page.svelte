@@ -198,7 +198,11 @@
           </thead>
           <tbody>
             {#each pipelines as pipeline}
-              <tr class="hover">
+              <tr
+                class="hover"
+                on:click={() =>
+                  onSelectPipeline({ target: { value: pipeline.id } })}
+              >
                 <th>
                   <input
                     name="pipelineToRun"
@@ -211,7 +215,7 @@
                 <td>{pipeline.name}</td>
                 <td>{pipeline.version}</td>
                 <td>{pipeline.workflow}</td>
-                <td>{pipeline.description}</td>
+                <td>{pipeline.description ?? ""}</td>
               </tr>
             {/each}
           </tbody>
