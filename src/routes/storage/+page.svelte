@@ -18,7 +18,7 @@
   }
 </script>
 
-<a class="btn btn-primary btn-sm" href="/storage/create">Create</a>
+<!-- <a class="btn btn-primary btn-sm" href="/storage/create">Create</a> -->
 
 <table class="table w-full">
   <thead>
@@ -37,11 +37,12 @@
     {#each storages as storage}
       <tr>
         <td>{storage.id}</td>
-        <td
+        <!-- <td
           ><a href="/storage/{storage.id}" class="link link-primary"
             >{storage.name}</a
           ></td
-        >
+        > -->
+        <td>{storage.name}</td>
         <td>{storage.provider}</td>
         <td>{storage.endpoint}</td>
         <td>{storage.region ?? "-"}</td>
