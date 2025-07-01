@@ -24,6 +24,7 @@
 <div class="hero">
   <div class="hero-content w-2/3 flex-col lg:flex-row-reverse">
     <div class="card bg-base-200 w-full shrink-0 shadow-2xl">
+      <!-- svelte-ignore a11y-label-has-associated-control -->
       <form class="card-body">
         <div class="form-control">
           <label class="label">

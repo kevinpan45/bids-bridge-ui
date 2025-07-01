@@ -2,8 +2,19 @@
   import axios from "axios";
   import { onMount } from "svelte";
   import TimeView from "$component/TimeView.svelte";
+  import toast from "svelte-french-toast";
 
   let jobs = [];
+
+  function deleteJob(id) {
+    axios.delete(`/api/jobs/${id}`).then(() => {
+      toast.success("Job deleted successfully");
+      // sleep 100 ms
+      setTimeout(() => {
+        window.location.href = "/job";
+      }, 100);
+    });
+  }
 
   onMount(() => {
     axios.get("/api/bff/jobs").then((response) => {
@@ -24,6 +35,7 @@
       <th>Engine Job</th>
       <th>Artifact</th>
       <th>Create Time</th>
+      <th>Ops</th>
     </tr>
   </thead>
   <tbody>
@@ -44,10 +56,18 @@
           {/if}
         </td>
         <td>{job.pipelineName}:{job.pipelineVersion}</td>
-        <td><a class="link" href="/dataset/{job.datasetId}">{job.datasetDoi}</a></td>
+        <td
+          ><a class="link" href="/dataset/{job.datasetId}">{job.datasetDoi}</a
+          ></td
+        >
         <td>{job.engineJobId}</td>
         <td>{job.artifactId ?? "-"}</td>
         <td><TimeView datetime={job.createdAt} /></td>
+        <td
+          ><button class="btn btn-primary btn-xs" on:click={deleteJob(job.id)}
+            >Delete</button
+          ></td
+        >
       </tr>
     {/each}
   </tbody>
