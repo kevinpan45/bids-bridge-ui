@@ -8,10 +8,9 @@
   import Navbar from "$component/Navbar.svelte";
   import Sidebar from "$component/Sidebar.svelte";
 
+  import { createClient, checkAuth, loginWithRedirect, logout, handleRedirectCallback, user, isAuthenticated } from '$lib/auth.js';
   let username;
-
   let layoutMounted = false;
-
   let collapsed = false;
 
   axios.defaults.baseURL = import.meta.env.VITE_API_SERVER;
@@ -27,15 +26,33 @@
     }
   );
 
+
   async function login() {
-    window.location.href = "/login";
+    await loginWithRedirect();
   }
 
-  async function logout() {}
+  async function handleLogout() {
+    await logout();
+  }
 
   onMount(async () => {
+    await createClient();
+    // Handle Auth0 redirect callback if code and state are in URL
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('code') && params.has('state')) {
+      await handleRedirectCallback();
+      // Remove code and state from URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+    await checkAuth();
     layoutMounted = true;
     collapsed = sessionStorage.getItem("sidebar-collapsed") === "true";
+    if (user) {
+      username = user.name || user.email;
+      console.log('Current logged user:', user);
+    } else {
+      console.log('No user logged in');
+    }
   });
 
   $: innerWidth = undefined;
@@ -48,9 +65,6 @@
   // Load protected routes from environment variable
   const protectedRoutes =
     import.meta.env.VITE_PROTECTED_ROUTES?.split(",") || [];
-
-  // Simulated authentication check (replace with real auth logic)
-  let isAuthenticated = false; // Update this based on actual authentication state
 
   $: {
     if (
@@ -71,7 +85,7 @@
   <div class="bg-base-100 drawer lg:drawer-open h-full overflow-hidden">
     <div class={`${collapsed ? "ml-20" : ""} drawer-content overflow-auto`}>
       {#if layoutMounted}
-        <Navbar {collapsed} {username} {login} showSearch={false} />
+        <Navbar {collapsed} {username} {login} {handleLogout} showSearch={false} />
       {/if}
 
       <div class={"max-w-[100vw] px-6 pb-16 xl:pr-2"}>

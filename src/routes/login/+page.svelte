@@ -1,9 +1,14 @@
 <script>
   
-  let email;
-  let password;
-  function login() {
-    console.log(`${email} ${password}`);
+  import { createClient, loginWithRedirect } from '$lib/auth.js';
+  import { onMount } from 'svelte';
+  let loading = true;
+  onMount(async () => {
+    await createClient();
+    loading = false;
+  });
+  async function login() {
+    await loginWithRedirect();
   }
 </script>
 
@@ -21,38 +26,17 @@
     </div>
     <div class="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
       <!-- svelte-ignore a11y-label-has-associated-control -->
-      <form class="card-body">
-        <div class="form-control">
-          <label class="label">
-            <span class="label-text">Email</span>
-          </label>
-          <input
-            type="email"
-            class="input input-bordered"
-            bind:value={email}
-            required
-          />
-        </div>
-        <div class="form-control">
-          <label class="label">
-            <span class="label-text">Password</span>
-          </label>
-          <input
-            type="password"
-            class="input input-bordered"
-            bind:value={password}
-            required
-          />
-          <label class="label">
-            <a href="#" class="label-text-alt link link-hover"
-              >Forgot password?</a
-            >
-          </label>
-        </div>
+      <div class="card-body">
         <div class="form-control mt-6">
-          <button class="btn btn-primary" on:click={login}>Login</button>
+          <button class="btn btn-primary w-full" on:click|preventDefault={login} disabled={loading}>
+            {#if loading}
+              Loading...
+            {:else}
+              Login with Auth0
+            {/if}
+          </button>
         </div>
-      </form>
+      </div>
     </div>
   </div>
 </div>
