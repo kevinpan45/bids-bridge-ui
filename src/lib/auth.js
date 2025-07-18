@@ -49,6 +49,14 @@ async function checkAuth() {
   }
 }
 
+async function getToken() {
+  if (isAuthenticated) {
+    return await auth0.getTokenSilently();
+  } else {
+    throw new Error('User is not authenticated');
+  }
+}
+
 export {
   createClient,
   loginWithPopup,
@@ -58,5 +66,6 @@ export {
   checkAuth,
   isAuthenticated,
   user,
-  popupOpen
+  popupOpen,
+  getToken
 };

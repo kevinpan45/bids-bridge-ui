@@ -8,7 +8,7 @@
   import Navbar from "$component/Navbar.svelte";
   import Sidebar from "$component/Sidebar.svelte";
 
-  import { createClient, checkAuth, loginWithRedirect, logout, handleRedirectCallback, user, isAuthenticated } from '$lib/auth.js';
+  import { createClient, checkAuth, loginWithRedirect, logout, handleRedirectCallback, user, isAuthenticated, getToken } from '$lib/auth.js';
   let username;
   let layoutMounted = false;
   let collapsed = false;
@@ -16,8 +16,13 @@
   axios.defaults.baseURL = import.meta.env.VITE_API_SERVER;
 
   axios.interceptors.request.use(
-    function (config) {
-      // config.headers["Authorization"] = "Bearer " + "auth-framework-todo";
+    async function (config) {
+      if(user) {
+        const accessToken = await getToken();
+        if(accessToken) {
+          config.headers["Authorization"] = "Bearer " + accessToken;
+        }
+      }
       return config;
     },
     function (error) {
@@ -49,9 +54,6 @@
     collapsed = sessionStorage.getItem("sidebar-collapsed") === "true";
     if (user) {
       username = user.name || user.email;
-      console.log('Current logged user:', user);
-    } else {
-      console.log('No user logged in');
     }
   });
 
