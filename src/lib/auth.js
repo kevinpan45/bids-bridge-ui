@@ -37,7 +37,12 @@ async function loginWithRedirect(options) {
 }
 
 async function logout(options) {
-  await auth0.logout(options);
+  await auth0.logout({
+    ...options,
+    logoutParams: {
+      returnTo: window.location.origin // Change this to your desired redirect URL
+    }
+  });
 }
 
 async function checkAuth() {
