@@ -10,6 +10,7 @@
   export let login = () => {};
   export let addScrollPaddingToNavbar;
   export let removeScrollPaddingFromNavbar;
+  export let handleLogout = () => {};
 </script>
 
 <svelte:window bind:scrollY />
@@ -38,7 +39,7 @@
     </div>
     {#if username}
       <div class="flex-0">
-        <UserIcon bind:username />
+        <UserIcon bind:username logout={handleLogout} />
       </div>
     {:else}
       <div class="flex-0">
