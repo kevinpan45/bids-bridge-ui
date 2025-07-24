@@ -1,14 +1,14 @@
 <script>
-  import "../app.css";
-  import Icon from "$component/icon/Icon.svelte";
-  import axios from "axios";
-  import { onMount } from "svelte";
   import { page } from "$app/stores";
-  import toast, { Toaster } from "svelte-french-toast";
+  import Icon from "$component/icon/Icon.svelte";
   import Navbar from "$component/Navbar.svelte";
   import Sidebar from "$component/Sidebar.svelte";
+  import axios from "axios";
+  import { onMount } from "svelte";
+  import { Toaster } from "svelte-french-toast";
+  import "../app.css";
 
-  import { createClient, checkAuth, loginWithRedirect, logout, handleRedirectCallback, user, isAuthenticated, getToken } from '$lib/auth.js';
+  import { checkAuth, createClient, getIdToken, handleRedirectCallback, isAuthenticated, loginWithRedirect, logout, user } from '$lib/auth.js';
   let username;
   let layoutMounted = false;
   let collapsed = false;
@@ -18,7 +18,7 @@
   axios.interceptors.request.use(
     async function (config) {
       if(user) {
-        const accessToken = await getToken();
+        const accessToken = await getIdToken();
         if(accessToken) {
           config.headers["Authorization"] = "Bearer " + accessToken;
         }

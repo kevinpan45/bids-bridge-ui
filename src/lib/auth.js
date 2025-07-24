@@ -1,3 +1,12 @@
+// Get Auth0 id_token after login
+async function getIdToken() {
+  if (isAuthenticated) {
+    const tokenSet = await auth0.getIdTokenClaims();
+    return tokenSet.__raw;
+  } else {
+    throw new Error('User is not authenticated');
+  }
+}
 import { createAuth0Client } from '@auth0/auth0-spa-js';
 
 let auth0 = null;
@@ -72,5 +81,6 @@ export {
   isAuthenticated,
   user,
   popupOpen,
-  getToken
+  getToken,
+  getIdToken
 };
