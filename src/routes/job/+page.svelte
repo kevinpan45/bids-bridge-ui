@@ -6,15 +6,16 @@
 
   let jobs = [];
 
-  function deleteJob(id) {
+function deleteJob(id) {
+  if (confirm('Are you sure you want to delete this job?')) {
     axios.delete(`/api/jobs/${id}`).then(() => {
       toast.success("Job deleted successfully");
-      // sleep 100 ms
       setTimeout(() => {
         window.location.href = "/job";
       }, 100);
     });
   }
+}
 
   onMount(() => {
     axios.get("/api/bff/jobs").then((response) => {
