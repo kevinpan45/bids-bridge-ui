@@ -55,6 +55,9 @@
   });
   let pipelines = [];
   async function runDatasetJob(selected) {
+    // Reset pipeline select radio status
+    document.querySelectorAll('input[name="pipelineToRun"]').forEach(r => r.checked = false);
+    // Reset job parameters
     jobParams = {
       name: null,
       group: null,
@@ -100,7 +103,7 @@
         window.location.href = `/job`;
       })
       .catch((err) => {
-        toast.error("Failed to create job");
+        toast.error(`Failed to create job [${err.response.data}]`);
       });
   }
 </script>
