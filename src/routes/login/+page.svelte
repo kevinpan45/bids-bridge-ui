@@ -1,11 +1,22 @@
 <script>
-  
-  import { createClient, loginWithRedirect } from '$lib/auth.js';
-  import { onMount } from 'svelte';
+  import {
+    createClient,
+    loginWithRedirect,
+    isAuthenticated,
+  } from "$lib/auth.js";
+  import { onMount } from "svelte";
+  import toast from "svelte-french-toast";
   let loading = true;
   onMount(async () => {
-    await createClient();
-    loading = false;
+    if (isAuthenticated) {
+      toast.success("You are already logged in.");
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 1000);
+    } else {
+      await createClient();
+      loading = false;
+    }
   });
   async function login() {
     await loginWithRedirect();
@@ -28,7 +39,11 @@
       <!-- svelte-ignore a11y-label-has-associated-control -->
       <div class="card-body">
         <div class="form-control mt-6">
-          <button class="btn btn-primary w-full" on:click|preventDefault={login} disabled={loading}>
+          <button
+            class="btn btn-primary w-full"
+            on:click|preventDefault={login}
+            disabled={loading}
+          >
             {#if loading}
               Loading...
             {:else}
