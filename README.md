@@ -1,7 +1,8 @@
-# bids-collector-desktop
-BIDS dataset collect application
+# bids-bridge-ui
 
-[Vercel Deployment](https://bids-collector-desktop.vercel.app)
+UI for BIDS Bridge Service.
+
+[Vercel Deployment](https://bids-bridge-ui.vercel.app)
 
 ## Environment Variables
 
