@@ -2,7 +2,7 @@
 
 UI for BIDS Bridge Service.
 
-[Vercel Deployment](https://bids-bridge-ui.vercel.app)
+[Vercel Deployment](https://bids-bridge.vercel.app)
 
 ## Environment Variables
 
