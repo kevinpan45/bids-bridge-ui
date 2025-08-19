@@ -5,6 +5,7 @@
   import toast from "svelte-french-toast";
 
   let jobs = [];
+  let loading = true;
 
 function deleteJob(id) {
   if (confirm('Are you sure you want to delete this job?')) {
@@ -20,11 +21,21 @@ function deleteJob(id) {
   onMount(() => {
     axios.get("/api/bff/jobs").then((response) => {
       jobs = response.data;
+      loading = false;
+    }).catch((error) => {
+      console.error('Error fetching jobs:', error);
+      loading = false;
     });
   });
 </script>
 
-{#if jobs.length === 0}
+{#if loading}
+  <!-- Loading state -->
+  <div class="flex justify-center items-center py-16">
+    <div class="loading loading-spinner loading-lg"></div>
+    <span class="ml-4 text-lg">Loading jobs...</span>
+  </div>
+{:else if jobs.length === 0}
   <!-- Empty state for no jobs -->
   <div class="flex flex-col items-center justify-center py-16 px-4">
     <div class="text-center max-w-md">
