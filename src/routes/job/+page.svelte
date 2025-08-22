@@ -6,6 +6,9 @@
 
   let jobs = [];
   let loading = true;
+  let showArtifactModal = false;
+  let artifactData = null;
+  let artifactLoading = false;
 
 function deleteJob(id) {
   if (confirm('Are you sure you want to delete this job?')) {
@@ -16,6 +19,33 @@ function deleteJob(id) {
       }, 100);
     });
   }
+}
+
+async function showArtifactDetails(jobId) {
+  artifactLoading = true;
+  showArtifactModal = true;
+  artifactData = null;
+  
+  try {
+    const response = await axios.get(`/api/jobs/${jobId}/artifacts`);
+    artifactData = response.data;
+    
+    // Find the job name from the jobs array
+    const job = jobs.find(j => j.id === jobId);
+    if (job) {
+      artifactData.jobName = job.name;
+    }
+  } catch (error) {
+    console.error('Error fetching artifact details:', error);
+    toast.error("Failed to load artifact details");
+  } finally {
+    artifactLoading = false;
+  }
+}
+
+function closeArtifactModal() {
+  showArtifactModal = false;
+  artifactData = null;
 }
 
   onMount(() => {
@@ -103,7 +133,21 @@ function deleteJob(id) {
             ></td
           >
           <td>{job.engineJobId}</td>
-          <td>{job.artifactId ?? "-"}</td>
+          <td>
+            {#if job.artifactId}
+              <button 
+                class="btn btn-outline btn-xs" 
+                on:click={() => showArtifactDetails(job.id)}
+              >
+                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                View Artifact
+              </button>
+            {:else}
+              -
+            {/if}
+          </td>
           <td><TimeView datetime={job.createdAt} /></td>
           <td
             ><button class="btn btn-primary btn-xs" on:click={deleteJob(job.id)}
@@ -114,4 +158,147 @@ function deleteJob(id) {
       {/each}
     </tbody>
   </table>
+{/if}
+
+<!-- Artifact Details Modal -->
+{#if showArtifactModal}
+  <div class="modal modal-open">
+    <div class="modal-box max-w-4xl">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="font-bold text-lg">Artifact Details</h3>
+        <button class="btn btn-sm btn-circle btn-ghost" on:click={closeArtifactModal}>
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      
+      {#if artifactLoading}
+        <div class="flex justify-center items-center py-8">
+          <div class="loading loading-spinner loading-md"></div>
+          <span class="ml-2">Loading artifact details...</span>
+        </div>
+      {:else if artifactData}
+        <div class="space-y-6">
+          <!-- Artifact Overview Card -->
+          <div class="card bg-base-100 border border-base-300">
+            <div class="card-body">
+              <h4 class="card-title text-primary mb-4">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                Artifact Information
+              </h4>
+              
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Left Column -->
+                <div class="space-y-4">
+                  <div class="form-control">
+                    <div class="label">
+                      <span class="label-text font-semibold">Job Name</span>
+                    </div>
+                    <div class="bg-base-200 p-3 rounded-lg">
+                      <span class="font-medium">{artifactData.jobName || 'Unknown Job'}</span>
+                    </div>
+                  </div>
+                  
+                  <div class="form-control">
+                    <div class="label">
+                      <span class="label-text font-semibold">Status</span>
+                    </div>
+                    <div class="bg-base-200 p-3 rounded-lg">
+                      {#if artifactData.status === "UPLOADED"}
+                        <div class="badge badge-success gap-2">
+                          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                          </svg>
+                          {artifactData.status}
+                        </div>
+                      {:else if artifactData.status === "PENDING"}
+                        <div class="badge badge-warning gap-2">
+                          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                          </svg>
+                          {artifactData.status}
+                        </div>
+                      {:else if artifactData.status === "FAILED"}
+                        <div class="badge badge-error gap-2">
+                          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                          </svg>
+                          {artifactData.status}
+                        </div>
+                      {:else}
+                        <div class="badge badge-neutral">{artifactData.status}</div>
+                      {/if}
+                    </div>
+                  </div>
+                  
+                  <div class="form-control">
+                    <div class="label">
+                      <span class="label-text font-semibold">Storage Path</span>
+                    </div>
+                    <div class="bg-base-200 p-3 rounded-lg">
+                      <div class="flex items-center gap-2">
+                        <svg class="w-4 h-4 text-base-content/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2V7"></path>
+                        </svg>
+                        <span class="font-mono text-sm break-all">{artifactData.storagePath}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Right Column -->
+                <div class="space-y-4">
+                  <div class="form-control">
+                    <div class="label">
+                      <span class="label-text font-semibold">Created At</span>
+                    </div>
+                    <div class="bg-base-200 p-3 rounded-lg">
+                      <div class="flex items-center gap-2">
+                        <svg class="w-4 h-4 text-base-content/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <TimeView datetime={artifactData.createdAt} />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="form-control">
+                    <div class="label">
+                      <span class="label-text font-semibold">Updated At</span>
+                    </div>
+                    <div class="bg-base-200 p-3 rounded-lg">
+                      <div class="flex items-center gap-2">
+                        <svg class="w-4 h-4 text-base-content/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                        </svg>
+                        {#if artifactData.updatedAt}
+                          <TimeView datetime={artifactData.updatedAt} />
+                        {:else}
+                          <span class="text-base-content/60 italic">Not updated</span>
+                        {/if}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {:else}
+        <div class="text-center py-8">
+          <p class="text-gray-500">No artifact data available</p>
+        </div>
+      {/if}
+      
+      <div class="modal-action">
+        <button class="btn" on:click={closeArtifactModal}>Close</button>
+      </div>
+    </div>
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
+    <!-- svelte-ignore a11y-no-static-element-interactions -->
+    <div class="modal-backdrop" on:click={closeArtifactModal}></div>
+  </div>
 {/if}
